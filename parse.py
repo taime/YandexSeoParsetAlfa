@@ -74,9 +74,8 @@ def clearTxtFile(domain, text):
 
 
 def parseSearchPage(soup, domain, text, p,):
-    print("cтр. " + str(p))
-
-    # time.sleep(2)
+    # print("cтр. " + str(p))
+    time.sleep(1)
     pos = 21 * p
     words = ''
 
