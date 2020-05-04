@@ -161,7 +161,7 @@ def parseSearchPage(soup, domain, text, p,):
 
 
 def checkPhrase(text):
-    printy("[g]Ищем фразу: " + text)
+    # printy("[g]Ищем фразу: " + text)
     page = start_page
     clearTxtFile(domain, text)
     while (page < end_page):
