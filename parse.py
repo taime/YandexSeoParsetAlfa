@@ -5,19 +5,79 @@ import requests
 import webbrowser
 from fake_useragent import UserAgent
 from pycookiecheat import chrome_cookies
+from printy import printy
+from printy import raw_format
 
-domain = 'gurmanit.ru'
+files_folder = './tmp/'
+domain = 'et-serv.ru'
+# phrases = [
+#     'томаты пилати что это',
+#     'паста трофи',
+#     'каперсы на веточке',
+#     'пекорино с трюфелем',
+#     'салями с трюфелем',
+#     'помидоры пилати',
+#     'сыр камамбер шввейцария',
+#     'сыр бри с трюфелями купить',
+#     'паста трофи',
+#     '90,5 % колбаса с трюфелем италия',
+#     'чернила каракатицы купить',
+# ]
 phrases = [
-    '90,5 % колбаса с трюфелем италия',
-    'чернила каракатицы купить',
-    'паста трофи',
-    'каперсы на веточке',
-    'пекорино с трюфелем',
-    'салями с трюфелем',
+    'частотный преобразователь danfoss',
+    'частотный преобразователь данфосс',
+    'частотный преобразователь danfoss vlt',
+    'частотный преобразователь delta',
+    'частотный преобразователь дельта',
+    'частотный преобразователь delta  vfd',
+    'частотный преобразователь vacon',
+    'частотный преобразователь вакон',
+    'частотный преобразователь веспер',
+    'частотный преобразователь toshiba',
+    'частотный преобразователь тошиба',
+    'частотный преобразователь купить',
+    'частотный преобразователь цена',
+    'частотный преобразователь 380',
+    'частотный преобразователь квт',
+    'преобразователь частоты danfoss',
+    'преобразователь частоты данфосс',
+    'преобразователь частоты danfoss vlt',
+    'преобразователь частоты delta',
+    'преобразователь частоты дельта',
+    'преобразователь частоты delta  vfd',
+    'преобразователь частоты vacon',
+    'преобразователь частоты вакон',
+    'преобразователь частоты веспер',
+    'преобразователь частоты toshiba',
+    'преобразователь частоты тошиба',
+    'преобразователь частоты купить',
+    'преобразователь частоты цена',
+    'преобразователь частоты 380',
+    'преобразователь частоты квт',
+    'частотник danfoss',
+    'частотник данфосс',
+    'частотник danfoss vlt',
+    'частотник delta',
+    'частотник дельта',
+    'частотник delta  vfd',
+    'частотник vacon',
+    'частотник вакон',
+    'частотник веспер',
+    'частотник toshiba',
+    'частотник тошиба',
+    'частотник купить',
+    'частотник цена',
+    'частотник 380',
+    'частотник квт',
+    'частотный преобразователь купить в москве',
+    'частотный преобразователь купить в спб',
+    'частотный преобразователь купить цены',
+    'частотный преобразователь для электродвигателя',
+    'частотный преобразователь 380 купить'
 ]
 
 start_page = 0
-end_page = 20
+end_page = 4
 # max_position_check = 820
 # res_on_page = 21
 # max_page = max_position_check//res_on_page
@@ -53,19 +113,19 @@ def getPage(domain, text, url, p, hdr, cookies):
 
 def whiteHtmlFile(html, domain, text, url, p):
     filename = domain + '_' + text + '_' + str(p)+'.html'
-    with open(filename, 'wb') as f:
+    with open(files_folder+filename, 'wb') as f:
         f.write(html)
 
 
 def addPositionsToTxtFile(positions, domain, text):
     filename = domain+'__'+text+'.txt'
-    with open(filename, 'a') as f:
+    with open(files_folder+filename, 'a') as f:
         f.write(positions)
 
 
 def writePositionsToTxtFile(positions, domain, text):
     filename = domain+'__'+text+'.txt'
-    with open(filename, 'w') as f:
+    with open(files_folder+filename, 'w') as f:
         f.write(positions)
 
 
@@ -74,8 +134,8 @@ def clearTxtFile(domain, text):
 
 
 def parseSearchPage(soup, domain, text, p,):
-    # print("cтр. " + str(p))
-    time.sleep(1)
+    # printy("[g]cтр. " + str(p))
+    time.sleep(5+p)
     pos = 21 * p
     words = ''
 
@@ -87,31 +147,49 @@ def parseSearchPage(soup, domain, text, p,):
             word = str(pos) + '. ' + title.b.text + "\n"
             words += word
             # print(pos, title.b.text)
+            raw_text = ""
             if title.b.text == domain:
-                print("Позиция:" + str(pos))
+                if pos < 11:
+                    raw_text = raw_format(str(pos), "y>B") + raw_format(" [g]| ") + raw_format(text, "y>B")
+                elif pos < 30:
+                    raw_text = raw_format(str(pos), "oB") + raw_format(" [g]| ") + raw_format(text, "oB")
+                else:
+                    raw_text = raw_format(str(pos), "mB") + raw_format(" [g]| ") + raw_format(text, "mB")
+                print(raw_text)
                 return ({"didFind": True, "words": words})
     return ({"didFind": False, "words": words})
 
 
 def checkPhrase(text):
-    print("-------------------")
-    print("Фраза: " + text)
+    printy("[g]Ищем фразу: " + text)
     page = start_page
     clearTxtFile(domain, text)
     while (page < end_page):
         soup = getPage(domain, text, url, page, hdr, cookies)
-        # soup = openHtmlPage('test.html')
-        res = parseSearchPage(soup, domain, text, page)
-        addPositionsToTxtFile(res['words'], domain, text)
-        page += 1
-        if res["didFind"]:
-            break
+        # soup = openHtmlPage('./tmp/et-serv.ru_частотный преобразователь delta_1.html')
+        if checkCapcha(soup):
+            print("Capcha :(")
+            return('capcha')
+        else:
+            res = parseSearchPage(soup, domain, text, page)
+            addPositionsToTxtFile(res['words'], domain, text)
+            page += 1
+            if res["didFind"]:
+                return('found')
+                break
+
+
+def checkCapcha(soup):
+    title_tags = soup.find_all(class_='captcha__image')
+    return (len(title_tags) > 0)
 
 
 # DOING THE JOB
-print("Домен: " + domain)
+printy("[wB]   -------------------\n       " + domain + "\n   -------------------")
 for txt in phrases:
-    checkPhrase(txt)
+    res = checkPhrase(txt)
+    if res == 'capcha':
+        break
 
 
 # def checkDomain(title, domain, text, pos):

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a318fa5185928181661f4abd9b2338ccdc83ac8ac57519143b0241314e7b1b54"
+            "sha256": "9f5672245af7512e6dd15f54776232b7bf0781138a9369391bccf306969ed86d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -127,6 +127,14 @@
                 "sha256:6a445aec3ac9e7d1f9b17ac0a1ccf2110334f7a49eacced3f74d0ea07975d98d"
             ],
             "version": "==19.1.0"
+        },
+        "printy": {
+            "hashes": [
+                "sha256:35bab6164b776b5eb127999e8f0c15d0b255a8a972dc45ae15ec9665d5bd97fc",
+                "sha256:e56ec11b30f290d8ff38bc56b865428dc94702baf38f8fff9659cc8dca620466"
+            ],
+            "index": "pypi",
+            "version": "==2.0.1"
         },
         "pycookiecheat": {
             "hashes": [
