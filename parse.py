@@ -5,8 +5,8 @@ import requests
 import webbrowser
 from fake_useragent import UserAgent
 from pycookiecheat import chrome_cookies
-from printy import printy
-from printy import raw_format
+from printy import printy, raw_format
+from random import randint
 
 files_folder = './tmp/'
 domain = 'et-serv.ru'
@@ -77,7 +77,7 @@ phrases = [
 ]
 
 start_page = 0
-end_page = 4
+end_page = 5
 # max_position_check = 820
 # res_on_page = 21
 # max_page = max_position_check//res_on_page
@@ -135,7 +135,7 @@ def clearTxtFile(domain, text):
 
 def parseSearchPage(soup, domain, text, p,):
     # printy("[g]cтр. " + str(p))
-    time.sleep(5+p)
+    time.sleep(randint(30, 120))
     pos = 21 * p
     words = ''
 
@@ -150,11 +150,11 @@ def parseSearchPage(soup, domain, text, p,):
             raw_text = ""
             if title.b.text == domain:
                 if pos < 11:
-                    raw_text = raw_format(str(pos), "y>B") + raw_format(" [g]| ") + raw_format(text, "y>B")
+                    raw_text = raw_format(strP(pos), "y>B") + raw_format(" [g]| ") + raw_format(text, "y>B")
                 elif pos < 30:
-                    raw_text = raw_format(str(pos), "oB") + raw_format(" [g]| ") + raw_format(text, "oB")
+                    raw_text = raw_format(strP(pos), "oB") + raw_format(" [g]| ") + raw_format(text, "oB")
                 else:
-                    raw_text = raw_format(str(pos), "mB") + raw_format(" [g]| ") + raw_format(text, "mB")
+                    raw_text = raw_format(strP(pos), "mB") + raw_format(" [g]| ") + raw_format(text, "mB")
                 print(raw_text)
                 return ({"didFind": True, "words": words})
     return ({"didFind": False, "words": words})
@@ -192,9 +192,10 @@ for txt in phrases:
         break
 
 
-# def checkDomain(title, domain, text, pos):
-#     if title.b.text == domain:
-#         print("Позиция:" + str(pos))
-#         return True
-#     else:
-#         return False
+def strP(pos):
+    if pos < 10:
+        return "  " + str(pos)
+    elif pos < 100:
+        return " " + str(pos)
+    else:
+        return str(pos)
