@@ -9,11 +9,11 @@ from pycookiecheat import chrome_cookies
 domain = 'gurmanit.ru'
 phrases = [
     '90,5 % колбаса с трюфелем италия',
-    # 'чернила каракатицы купить',
-    # 'паста трофи',
-    # 'каперсы на веточке',
-    # 'пекорино с трюфелем',
-    # 'салями с трюфелем',
+    'чернила каракатицы купить',
+    'паста трофи',
+    'каперсы на веточке',
+    'пекорино с трюфелем',
+    'салями с трюфелем',
 ]
 
 start_page = 0
@@ -57,10 +57,20 @@ def whiteHtmlFile(html, domain, text, url, p):
         f.write(html)
 
 
-def writePositionsToTxtFile(positions, domain, text):
+def addPositionsToTxtFile(positions, domain, text):
     filename = domain+'__'+text+'.txt'
     with open(filename, 'a') as f:
         f.write(positions)
+
+
+def writePositionsToTxtFile(positions, domain, text):
+    filename = domain+'__'+text+'.txt'
+    with open(filename, 'w') as f:
+        f.write(positions)
+
+
+def clearTxtFile(domain, text):
+    writePositionsToTxtFile('', domain, text)
 
 
 def parseSearchPage(soup, domain, text, p,):
@@ -78,35 +88,29 @@ def parseSearchPage(soup, domain, text, p,):
             word = str(pos) + '. ' + title.b.text + "\n"
             words += word
             # print(pos, title.b.text)
-            writePositionsToTxtFile(word, domain, text)
             if title.b.text == domain:
                 print("Позиция:" + str(pos))
-                return (True)
-    return (False)
+                return ({"didFind": True, "words": words})
+    return ({"didFind": False, "words": words})
 
 
 def checkPhrase(text):
     print("-------------------")
     print("Фраза: " + text)
-    # positions = ''
     page = start_page
-    didFind = False
+    clearTxtFile(domain, text)
     while (page < end_page):
-        # soup = getPage(domain, text, url, page, hdr, cookies)
-        soup = openHtmlPage('test.html')
-        didFind = parseSearchPage(soup, domain, text, page)
-        # positions += res.words
-        # writePositionsToTxtFile(positions, domain, text)
+        soup = getPage(domain, text, url, page, hdr, cookies)
+        # soup = openHtmlPage('test.html')
+        res = parseSearchPage(soup, domain, text, page)
+        addPositionsToTxtFile(res['words'], domain, text)
         page += 1
-        if didFind:
-            print('FIND!!!')
-            # writePositionsToTxtFile(positions, domain, text)
+        if res["didFind"]:
             break
 
 
 # DOING THE JOB
 print("Домен: " + domain)
-print("===================")
 for txt in phrases:
     checkPhrase(txt)
 
