@@ -8,6 +8,7 @@ from pycookiecheat import chrome_cookies
 from printy import printy, raw_format
 from random import randint
 
+
 files_folder = './tmp/'
 domain = 'et-serv.ru'
 # phrases = [
@@ -94,6 +95,15 @@ hdr = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKi
 cookies = chrome_cookies(url)
 
 
+def strP(pos):
+    if pos < 10:
+        return "  " + str(pos)
+    elif pos < 100:
+        return " " + str(pos)
+    else:
+        return str(pos)
+
+
 def openHtmlPage(file):
     with open(file) as fp:
         soup = BeautifulSoup(fp, 'html.parser')
@@ -109,6 +119,11 @@ def getPage(domain, text, url, p, hdr, cookies):
     # Write to file html that we got
     whiteHtmlFile(response.content, domain, text, url, p)
     return (soup)
+
+
+def checkCapcha(soup):
+    title_tags = soup.find_all(class_='captcha__image')
+    return (len(title_tags) > 0)
 
 
 def whiteHtmlFile(html, domain, text, url, p):
@@ -135,7 +150,7 @@ def clearTxtFile(domain, text):
 
 def parseSearchPage(soup, domain, text, p,):
     # printy("[g]cтр. " + str(p))
-    time.sleep(randint(30, 120))
+    # time.sleep(randint(30, 120))
     pos = 21 * p
     words = ''
 
@@ -150,11 +165,11 @@ def parseSearchPage(soup, domain, text, p,):
             raw_text = ""
             if title.b.text == domain:
                 if pos < 11:
-                    raw_text = raw_format(strP(pos), "y>B") + raw_format(" [g]| ") + raw_format(text, "y>B")
+                    raw_text = raw_format(strP(pos), "y>B") + raw_format(" [g]| ") + raw_format(text, "y>")
                 elif pos < 30:
-                    raw_text = raw_format(strP(pos), "oB") + raw_format(" [g]| ") + raw_format(text, "oB")
+                    raw_text = raw_format(strP(pos), "oB") + raw_format(" [g]| ") + raw_format(text, "o")
                 else:
-                    raw_text = raw_format(strP(pos), "mB") + raw_format(" [g]| ") + raw_format(text, "mB")
+                    raw_text = raw_format(strP(pos), "mB") + raw_format(" [g]| ") + raw_format(text, "m")
                 print(raw_text)
                 return ({"didFind": True, "words": words})
     return ({"didFind": False, "words": words})
@@ -168,7 +183,7 @@ def checkPhrase(text):
         soup = getPage(domain, text, url, page, hdr, cookies)
         # soup = openHtmlPage('./tmp/et-serv.ru_частотный преобразователь delta_1.html')
         if checkCapcha(soup):
-            print("Capcha :(")
+            # print("Capcha :(")
             return('capcha')
         else:
             res = parseSearchPage(soup, domain, text, page)
@@ -179,23 +194,9 @@ def checkPhrase(text):
                 break
 
 
-def checkCapcha(soup):
-    title_tags = soup.find_all(class_='captcha__image')
-    return (len(title_tags) > 0)
-
-
 # DOING THE JOB
-printy("[wB]   -------------------\n       " + domain + "\n   -------------------")
+# printy("[wB]   -------------------\n       " + domain + "\n   -------------------")
 for txt in phrases:
     res = checkPhrase(txt)
     if res == 'capcha':
         break
-
-
-def strP(pos):
-    if pos < 10:
-        return "  " + str(pos)
-    elif pos < 100:
-        return " " + str(pos)
-    else:
-        return str(pos)
