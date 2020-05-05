@@ -69,20 +69,21 @@ def continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
         printy("Too much tires", "r")
         return(None)
     else:
-        getPageWithProxy(domain, text, url, p, hdr, cookies, tries)
+        getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries)
 
 
 def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
     printy("[g]Try:" + str(tries) + ". " + str(base_url) + text + "&p=" + str(p))
     # proxies = getRandomProxy()
-    proxies = getProxies(tries)
-    print(proxies)
+    # proxies = getProxies(tries)
+    # print(proxies)
     text_q = urllib.parse.quote_plus(text)
     url = base_url + text_q + "&p=" + str(p)
     # Making Request
     try:
+        # response = requests.get(url, headers=hdr, cookies=cookies, timeout=10)
+        # proxies = {"https": "https://127.0.0.1"}
         response = requests.get(url, headers=hdr, cookies=cookies, proxies=proxies, timeout=5)
-        # response = requests.get(url, headers=hdr, cookies=cookies,  timeout=10)
         response.raise_for_status()
         whiteHtmlFile(response.content, domain, text, url, p)
         if response.text is None:
@@ -98,6 +99,7 @@ def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
                 if (hasCapcha):
                     continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
                 else:
+                    addProxyToTxtFile(proxies, file='proxies_best.txt')
                     return(soup)
 
     except requests.exceptions.HTTPError as errh:
@@ -150,8 +152,8 @@ def writePositionsToTxtFile(positions, domain, text):
         f.write(positions)
 
 
-def addProxyToTxtFile(proxy):
-    with open('proxies.txt', 'a') as f:
+def addProxyToTxtFile(proxy, file='proxies.txt'):
+    with open(file, 'a') as f:
         f.write(proxy["https"]+"\n")
 
 
@@ -197,7 +199,7 @@ def checkPhrase(text):
     while (page < end_page):
         # response = getPage(domain, text, url, page, hdr, cookies)
         # response_text = getPageWithProxy(domain, text, url, page, hdr, cookies)
-        soup = getPageWithProxy(domain, text, url, page, hdr, cookies)
+        soup = getPageWithProxy(domain, text, base_url, page, hdr, cookies)
         # soup = BeautifulSoup(response_text, 'html.parser')
         # soup = getSoupFromHtmlPage('./tmp/et-serv.ru_частотный преобразователь 380_0.html')
 
