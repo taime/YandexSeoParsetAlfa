@@ -1,7 +1,6 @@
 from pycookiecheat import chrome_cookies
 
 
-
 start_page = 0
 end_page = 3
 # max_position_check = 820
@@ -10,8 +9,8 @@ end_page = 3
 files_folder = './tmp/'
 # domain = 'gurmanit.ru'
 domain = 'et-serv.ru'
-url = "https://yandex.ru/search/?text="
-cookies = chrome_cookies(url)
+base_url = "https://yandex.ru/search/?text="
+cookies = chrome_cookies(base_url)
 
 
 hdr = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36',

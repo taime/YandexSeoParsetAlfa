@@ -10,18 +10,22 @@ from random import randint
 
 import http.client
 
-from const import start_page, end_page, url, proxies_list_https, files_folder, domain, phrases, cookies, hdr
+from const import start_page, end_page, base_url, proxies_list_https, files_folder, domain, phrases, cookies, hdr
 
 
 def getRandomProxy():
     # proxies_list = proxies_list_http
     proxies_list = proxies_list_https
-
     q_proxies = len(proxies_list)-2
     random = randint(0, q_proxies)
     proxies = {"https": proxies_list[random]}
     proxies = {"https": proxies_list[random]}
+    return proxies
 
+
+def getProxies(n):
+    proxy = proxies_list_https[n]
+    proxies = {"https": proxy}
     return proxies
 
 
@@ -45,9 +49,9 @@ def getSoupFromHtmlPage(file):
     return (soup)
 
 
-def getPage(domain, text, url, p, hdr, cookies):
+def getPage(domain, text, base_url, p, hdr, cookies):
     text_q = urllib.parse.quote_plus(text)
-    url = url + text_q + "&p=" + str(p)
+    url = base_url + text_q + "&p=" + str(p)
     # Making Request
     response = requests.get(url, headers=hdr, cookies=cookies)
 
@@ -59,7 +63,7 @@ def getPage(domain, text, url, p, hdr, cookies):
     return (response)
 
 
-def continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries):
+def continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries):
     tries += 1
     if tries > 500:
         printy("Too much tires", "r")
@@ -68,49 +72,59 @@ def continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries):
         getPageWithProxy(domain, text, url, p, hdr, cookies, tries)
 
 
-def getPageWithProxy(domain, text, url, p, hdr, cookies, tries=0):
-    proxies = getRandomProxy()
+def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
+    printy("[g]Try:" + str(tries) + ". " + str(base_url) + text + "&p=" + str(p))
+    # proxies = getRandomProxy()
+    proxies = getProxies(tries)
     print(proxies)
     text_q = urllib.parse.quote_plus(text)
-    url = url + text_q + "&p=" + str(p)
+    url = base_url + text_q + "&p=" + str(p)
     # Making Request
     try:
-        response = requests.get(url, headers=hdr, cookies=cookies, proxies=proxies, timeout=10)
+        response = requests.get(url, headers=hdr, cookies=cookies, proxies=proxies, timeout=5)
         # response = requests.get(url, headers=hdr, cookies=cookies,  timeout=10)
         response.raise_for_status()
         whiteHtmlFile(response.content, domain, text, url, p)
         if response.text is None:
             print("reponse text is None. Let's try another proxy")
-            continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
+            continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
         else:
             addProxyToTxtFile(proxies)
             soup = BeautifulSoup(response.text, 'html.parser')
             if soup is None:
-                continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
+                continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
             else:
-                return(soup)
+                hasCapcha = checkHasCapcha(soup)
+                if (hasCapcha):
+                    continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
+                else:
+                    return(soup)
 
     except requests.exceptions.HTTPError as errh:
         printy("Http Error", "rB")
         # print("Http Error:", errh)
-        continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
+        continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
     except requests.exceptions.ConnectionError as errc:
         printy("Error Connecting", "rB")
         # print("Error Connecting:", errc)
-        continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
+        continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
     except requests.exceptions.Timeout as errt:
         printy("Timeout Error", "rB")
         # print("Timeout Error:", errt)
-        continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
+        continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
     except requests.exceptions.RequestException as err:
         printy("OOps: Something Else", "rB")
         # print("OOps: Something Else", err)
-        continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
+        continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
 
 
-def checkCapcha(soup):
+def checkHasCapcha(soup):
     title_tags = soup.find_all(class_='captcha__image')
-    return (len(title_tags) > 0)
+    has_capcha = len(title_tags) > 0
+    if has_capcha:
+        printy("The Capcha :(", "m")
+
+    return (has_capcha)
 
 
 def whiteHtmlFile(html, domain, text, url, p):
@@ -190,9 +204,9 @@ def checkPhrase(text):
         if soup is None:
             printy("Soup is None", "m")
             # return("STOP")
-        elif checkCapcha(soup):
-            printy("The Capcha :(", "m")
-            # return("STOP")
+        # elif checkHasCapcha(soup):
+        #     printy("The Capcha :(", "m")
+        #     return("STOP")
         else:
             res = parseSearchPage(soup, domain, text, page)
             addPositionsToTxtFile(res['words'], domain, text)
