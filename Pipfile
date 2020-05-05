@@ -14,6 +14,7 @@ requests = "*"
 fake-useragent = "*"
 pycookiecheat = "*"
 printy = "*"
+urllib2 = "*"
 
 [requires]
 python_version = "3.8"
