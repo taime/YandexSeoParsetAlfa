@@ -153,7 +153,7 @@ end_page = 3
 # max_position_check = 820
 # res_on_page = 21
 # max_page = max_position_check//res_on_page
-url = "http://yandex.ru/search/?text="
+url = "https://yandex.ru/search/?text="
 
 
 hdr = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36',
@@ -167,13 +167,13 @@ cookies = chrome_cookies(url)
 
 
 def getRandomProxy():
-    proxies_list = proxies_list_http
-    # proxies_list = proxies_list_https
+    # proxies_list = proxies_list_http
+    proxies_list = proxies_list_https
 
     q_proxies = len(proxies_list)-2
     random = randint(0, q_proxies)
-    proxies = {"http": proxies_list[random]}
-    # proxies = {"https": proxies_list[random]}
+    proxies = {"https": proxies_list[random]}
+    proxies = {"https": proxies_list[random]}
 
     return proxies
 
@@ -223,7 +223,6 @@ def continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries):
 
 def getPageWithProxy(domain, text, url, p, hdr, cookies, tries=0):
     proxies = getRandomProxy()
-    printy("proxy is:", "c")
     print(proxies)
     text_q = urllib.parse.quote_plus(text)
     url = url + text_q + "&p=" + str(p)
@@ -232,30 +231,33 @@ def getPageWithProxy(domain, text, url, p, hdr, cookies, tries=0):
         response = requests.get(url, headers=hdr, cookies=cookies, proxies=proxies, timeout=10)
         # response = requests.get(url, headers=hdr, cookies=cookies,  timeout=10)
         response.raise_for_status()
-        addProxyToTxtFile(proxies)
         whiteHtmlFile(response.content, domain, text, url, p)
         if response.text is None:
             print("reponse text is None. Let's try another proxy")
             continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
         else:
+            addProxyToTxtFile(proxies)
             soup = BeautifulSoup(response.text, 'html.parser')
-            return(soup)
+            if soup is None:
+                continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
+            else:
+                return(soup)
 
     except requests.exceptions.HTTPError as errh:
-        printy("ERROR HTTP ", "rB")
-        print("Http Error:", errh)
+        printy("Http Error", "rB")
+        # print("Http Error:", errh)
         continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
     except requests.exceptions.ConnectionError as errc:
-        printy("ERROR Connecting ", "rB")
-        print("Error Connecting:", errc)
+        printy("Error Connecting", "rB")
+        # print("Error Connecting:", errc)
         continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
     except requests.exceptions.Timeout as errt:
-        printy("ERROR TIMEOUT", "rB")
-        print("Timeout Error:", errt)
+        printy("Timeout Error", "rB")
+        # print("Timeout Error:", errt)
         continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
     except requests.exceptions.RequestException as err:
-        printy("ERROR OOps ", "rB")
-        print("OOps: Something Else", err)
+        printy("OOps: Something Else", "rB")
+        # print("OOps: Something Else", err)
         continueGetIfNotTooManyTries(domain, text, url, p, hdr, cookies, tries)
 
 
@@ -284,7 +286,7 @@ def writePositionsToTxtFile(positions, domain, text):
 
 def addProxyToTxtFile(proxy):
     with open('proxies.txt', 'a') as f:
-        f.write(proxy["http"]+"\n")
+        f.write(proxy["https"]+"\n")
 
 
 def clearTxtFile(domain, text):
@@ -334,10 +336,10 @@ def checkPhrase(text):
 
         if soup is None:
             printy("Soup is None", "m")
-            return("STOP")
+            # return("STOP")
         elif checkCapcha(soup):
             printy("The Capcha :(", "m")
-            return("STOP")
+            # return("STOP")
         else:
             res = parseSearchPage(soup, domain, text, page)
             addPositionsToTxtFile(res['words'], domain, text)
