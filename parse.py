@@ -10,15 +10,15 @@ from random import randint
 
 import http.client
 
-from const import start_page, end_page, base_url, proxies_list_https, files_folder, domain, phrases, cookies, hdr
+from const import start_page, end_page, base_url, files_folder, domain, phrases, cookies, hdr
+from proxy_lists import proxies_list_https
 
 
 def getRandomProxy():
     # proxies_list = proxies_list_http
     proxies_list = proxies_list_https
-    q_proxies = len(proxies_list)-2
+    q_proxies = len(proxies_list)-1
     random = randint(0, q_proxies)
-    proxies = {"https": proxies_list[random]}
     proxies = {"https": proxies_list[random]}
     return proxies
 
@@ -58,9 +58,9 @@ def getPage(domain, text, base_url, p, hdr, cookies):
     # Write to file html that we got
     whiteHtmlFile(response.content, domain, text, url, p)
 
-    # soup = BeautifulSoup(response.text, 'html.parser')
-    # return (soup)
-    return (response)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    return (soup)
+    # return (response)
 
 
 def continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries):
@@ -74,9 +74,9 @@ def continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
 
 def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
     printy("[g]Try:" + str(tries) + ". " + str(base_url) + text + "&p=" + str(p))
-    # proxies = getRandomProxy()
+    proxies = getRandomProxy()
     # proxies = getProxies(tries)
-    # print(proxies)
+    print("Proxies: "+str(proxies))
     text_q = urllib.parse.quote_plus(text)
     url = base_url + text_q + "&p=" + str(p)
     # Making Request
@@ -93,29 +93,32 @@ def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
             addProxyToTxtFile(proxies)
             soup = BeautifulSoup(response.text, 'html.parser')
             if soup is None:
+                printy("Soup is None", "m")
                 continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
+                return (false)
             else:
                 hasCapcha = checkHasCapcha(soup)
                 if (hasCapcha):
                     continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
+                    return (False)
                 else:
                     addProxyToTxtFile(proxies, file='proxies_best.txt')
                     return(soup)
 
     except requests.exceptions.HTTPError as errh:
-        printy("Http Error", "rB")
+        printy("Http Error", "r")
         # print("Http Error:", errh)
         continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
     except requests.exceptions.ConnectionError as errc:
-        printy("Error Connecting", "rB")
+        printy("Error Connecting", "r")
         # print("Error Connecting:", errc)
         continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
     except requests.exceptions.Timeout as errt:
-        printy("Timeout Error", "rB")
+        printy("Timeout Error", "r")
         # print("Timeout Error:", errt)
         continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
     except requests.exceptions.RequestException as err:
-        printy("OOps: Something Else", "rB")
+        printy("OOps: Something Else", "r")
         # print("OOps: Something Else", err)
         continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
 
@@ -192,44 +195,62 @@ def printPosWithColor(pos, text):
     print(raw_text)
 
 
+def findWord(soup, text, page):
+    res = parseSearchPage(soup, domain, text, page)
+    addPositionsToTxtFile(res['words'], domain, text)
+    page += 1
+    if res["didFind"]:
+        printy("Great! We've found it!", "m")
+        return(True)
+    else:
+        # print("Didn't found the word on this page, will try another")
+        return(False)
+
+
 def checkPhrase(text):
     printy("[g]Ищем фразу: " + text)
     page = start_page
     clearTxtFile(domain, text)
     while (page < end_page):
-        # response = getPage(domain, text, url, page, hdr, cookies)
-        # response_text = getPageWithProxy(domain, text, url, page, hdr, cookies)
-        soup = getPageWithProxy(domain, text, base_url, page, hdr, cookies)
-        # soup = BeautifulSoup(response_text, 'html.parser')
-        # soup = getSoupFromHtmlPage('./tmp/et-serv.ru_частотный преобразователь 380_0.html')
+        soup = getPage(domain, text, base_url, page, hdr, cookies)
+        # soup = getPageWithProxy(domain, text, base_url, page, hdr, cookies)
+        # soup = BeautifulSoup(response.text, 'html.parser')
+        # soup = getSoupFromHtmlPage('./tmp/test.html')
 
-        if soup is None:
-            printy("Soup is None", "m")
-            # return("STOP")
-        # elif checkHasCapcha(soup):
-        #     printy("The Capcha :(", "m")
-        #     return("STOP")
+        find = findWord(soup, text, page)
+
+        if find:
+            break
         else:
-            res = parseSearchPage(soup, domain, text, page)
-            addPositionsToTxtFile(res['words'], domain, text)
-            page += 1
-            if res["didFind"]:
-                printy("Great! We've found it!", "m")
-                # return(True)
-                break
-            # else:
-            #     return("Didn't found the word on this page, will try another")
+            print("didn't find!")
+
+        # if soup is None:
+        #     printy("Soup is None", "m")
+        #     # return("STOP")
+        # # elif checkHasCapcha(soup):
+        # #     printy("The Capcha :(", "m")
+        # #     return("STOP")
+        # else:
+        #     res = parseSearchPage(soup, domain, text, page)
+        #     addPositionsToTxtFile(res['words'], domain, text)
+        #     page += 1
+        #     if res["didFind"]:
+        #         printy("Great! We've found it!", "m")
+        #         # return(True)
+        #         break
+        #     # else:
+        #     #     return("Didn't found the word on this page, will try another")
 
 
 def doTheJob():
     printy("[wB]   -------------------\n       " + domain + "\n   -------------------")
-    # wl = len(phrases)-1
+    wl = len(phrases)-1
 
     for word in phrases:
-        res = checkPhrase(word)
-        # # TEMPORARY TAKE RANDOM NUMBER FO DICT
-        # random_word = phrases[randint(0, wl)]
-        # res = checkPhrase(random_word)
+        # res = checkPhrase(word)
+        # TEMPORARY TAKE RANDOM NUMBER FO DICT
+        random_word = phrases[randint(0, wl)]
+        res = checkPhrase(random_word)
         if res == "STOP":
             print("Had to stop program!")
             break
