@@ -128,7 +128,7 @@ phrases = [
 ]
 
 start_page = 0
-end_page = 5
+end_page = 3
 # max_position_check = 820
 # res_on_page = 21
 # max_page = max_position_check//res_on_page
@@ -155,6 +155,11 @@ def strP(pos):
 
 
 def openHtmlPage(file):
+    with open(file) as fp:
+        return (fp)
+
+
+def getSoupFromHtmlPage(file):
     with open(file) as fp:
         soup = BeautifulSoup(fp, 'html.parser')
     return (soup)
@@ -261,17 +266,20 @@ def parseSearchPage(soup, domain, text, p,):
             word = str(pos) + '. ' + title.b.text + "\n"
             words += word
             # print(pos, title.b.text)
-            raw_text = ""
             if title.b.text == domain:
-                if pos < 11:
-                    raw_text = raw_format(strP(pos), "y>B") + raw_format(" [g]| ") + raw_format(text, "y>")
-                elif pos < 30:
-                    raw_text = raw_format(strP(pos), "oB") + raw_format(" [g]| ") + raw_format(text, "o")
-                else:
-                    raw_text = raw_format(strP(pos), "mB") + raw_format(" [g]| ") + raw_format(text, "m")
-                print(raw_text)
+                printPosWithColor(pos, text)
                 return ({"didFind": True, "words": words})
     return ({"didFind": False, "words": words})
+
+
+def printPosWithColor(pos, text):
+    if pos < 11:
+        raw_text = raw_format(strP(pos), "y>B") + raw_format(" [g]| ") + raw_format(text, "y>")
+    elif pos < 30:
+        raw_text = raw_format(strP(pos), "oB") + raw_format(" [g]| ") + raw_format(text, "o")
+    else:
+        raw_text = raw_format(strP(pos), "mB") + raw_format(" [g]| ") + raw_format(text, "m")
+    print(raw_text)
 
 
 def checkPhrase(text):
@@ -280,39 +288,47 @@ def checkPhrase(text):
     clearTxtFile(domain, text)
     while (page < end_page):
         # response = getPage(domain, text, url, page, hdr, cookies)
-        response = openHtmlPage('./tmp/et-serv.ru_частотный преобразователь 380_0.html')
+
         # response = getPageWithProxy(domain, text, url, page, hdr, cookies)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        # Write to file html that we got
+        # soup = BeautifulSoup(response.text, 'html.parser')
+
+        soup = getSoupFromHtmlPage('./tmp/et-serv.ru_частотный преобразователь 380_0.html')
 
         if soup is None:
             printy("Soup is None", "m")
-            return(False)
+            return("STOP")
         elif checkCapcha(soup):
             printy("The Capcha :(", "m")
-            return(False)
+            return("STOP")
         else:
+            print("We have Soup!")
             res = parseSearchPage(soup, domain, text, page)
             addPositionsToTxtFile(res['words'], domain, text)
             page += 1
             if res["didFind"]:
+                printy("Great! We've found it!", "m")
                 return(True)
                 break
+            else:
+                return("Didn't found the word on this page, will try another")
 
 
 def doTheJob():
     printy("[wB]   -------------------\n       " + domain + "\n   -------------------")
 
     for word in phrases:
-        # res = checkPhrase(word)
-        # TEMPORARY TAKE RANDOM NUMBER FO DICT
-        random_word = phrases[randint(0, len(phrases)-1)]
-        res = checkPhrase(random_word)
-        if res:
-            print("Great Job. Let's find another word!")
-        else:
+        res = checkPhrase(word)
+        # # TEMPORARY TAKE RANDOM NUMBER FO DICT
+        # random_word = phrases[randint(0, len(phrases)-1)]
+        # res = checkPhrase(random_word)
+        if res == "STOP":
             print("Had to stop program!")
             break
+        elif res:
+            print("Great Job. Let's find another word!")
+        else:
+            printy("res is", "yB")
+            print(res)
 
 
 doTheJob()
