@@ -207,13 +207,13 @@ def checkPhrase(text):
 
 def doTheJob():
     printy("[wB]   -------------------\n       " + domain + "\n   -------------------")
-    wl = len(phrases)-1
+    # wl = len(phrases)-1
 
     for word in phrases:
-        # res = checkPhrase(word)
-        # TEMPORARY TAKE RANDOM NUMBER FO DICT
-        random_word = phrases[randint(0, wl)]
-        res = checkPhrase(random_word)
+        res = checkPhrase(word)
+        # # TEMPORARY TAKE RANDOM NUMBER FO DICT
+        # random_word = phrases[randint(0, wl)]
+        # res = checkPhrase(random_word)
         if res == "STOP":
             print("Had to stop program!")
             break
