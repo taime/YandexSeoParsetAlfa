@@ -7,8 +7,8 @@ end_page = 3
 # res_on_page = 21
 # max_page = max_position_check//res_on_page
 files_folder = './tmp/'
-# domain = 'gurmanit.ru'
-domain = 'et-serv.ru'
+domain = 'gurmanit.ru'
+# domain = 'et-serv.ru'
 base_url = "https://yandex.ru/search/?text="
 cookies = chrome_cookies(base_url)
 

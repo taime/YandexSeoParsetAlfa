@@ -212,17 +212,20 @@ def checkPhrase(text):
     page = start_page
     clearTxtFile(domain, text)
     while (page < end_page):
-        soup = getPage(domain, text, base_url, page, hdr, cookies)
+        time.sleep(1)
+        # soup = getPage(domain, text, base_url, page, hdr, cookies)
         # soup = getPageWithProxy(domain, text, base_url, page, hdr, cookies)
         # soup = BeautifulSoup(response.text, 'html.parser')
-        # soup = getSoupFromHtmlPage('./tmp/test.html')
+        soup = getSoupFromHtmlPage('./tmp/test.html')
 
-        find = findWord(soup, text, page)
+        # find = findWord(soup, text, page)
 
-        if find:
+        if findWord(soup, text, page):
             break
         else:
-            print("didn't find!")
+            print("didn't find it on page:" + str(page))
+
+        page+=1
 
         # if soup is None:
         #     printy("Soup is None", "m")
