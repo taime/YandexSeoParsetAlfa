@@ -212,16 +212,17 @@ def checkPhrase(text):
     page = start_page
     clearTxtFile(domain, text)
     while (page < end_page):
-        time.sleep(1)
-        # soup = getPage(domain, text, base_url, page, hdr, cookies)
+        # time.sleep(4)
+        soup = getPage(domain, text, base_url, page, hdr, cookies)
         # soup = getPageWithProxy(domain, text, base_url, page, hdr, cookies)
         # soup = BeautifulSoup(response.text, 'html.parser')
-        soup = getSoupFromHtmlPage('./tmp/test.html')
+        # soup = getSoupFromHtmlPage('./tmp/test.html')
 
         # find = findWord(soup, text, page)
 
         if findWord(soup, text, page):
-            break
+            return('YES!')
+            # break
         else:
             print("didn't find it on page:" + str(page))
 
@@ -247,13 +248,13 @@ def checkPhrase(text):
 
 def doTheJob():
     printy("[wB]   -------------------\n       " + domain + "\n   -------------------")
-    wl = len(phrases)-1
+    # wl = len(phrases)-1
 
     for word in phrases:
-        # res = checkPhrase(word)
-        # TEMPORARY TAKE RANDOM NUMBER FO DICT
-        random_word = phrases[randint(0, wl)]
-        res = checkPhrase(random_word)
+        res = checkPhrase(word)
+        # # TEMPORARY TAKE RANDOM NUMBER FO DICT
+        # random_word = phrases[randint(0, wl)]
+        # res = checkPhrase(random_word)
         if res == "STOP":
             print("Had to stop program!")
             break
