@@ -10,8 +10,8 @@ from random import randint
 
 import http.client
 
-from const import start_page, end_page, base_url, files_folder, domain, phrases, cookies, hdr
-from proxy_lists import proxies_list_https
+from "../const/const.py" import start_page, end_page, base_url, files_folder, domain, phrases, cookies, hdr
+from "../const/proxy_lists.py" import proxies_list_https
 
 
 def getRandomProxy():

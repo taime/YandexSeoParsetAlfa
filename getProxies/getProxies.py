@@ -7,10 +7,9 @@ from fake_useragent import UserAgent
 from printy import printy, raw_format
 from random import randint
 import http.client
-from const import start_page, end_page, base_url, files_folder, domain, phrases, cookies, hdr
-from proxy_lists import proxies_list_https
 
-from func import whiteHtmlFile, getSoupFromHtmlPage
+from "../const/const.py" import start_page, end_page, base_url, files_folder, domain, phrases, cookies, hdr
+from "../const/func.py" import whiteHtmlFile, getSoupFromHtmlPage
 
 url = 'http://free-proxy.cz/en/proxylist/country/all/https/date/all'
 filename = './tmp/proxies.html'

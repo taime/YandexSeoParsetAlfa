@@ -15,6 +15,7 @@ fake-useragent = "*"
 pycookiecheat = "*"
 printy = "*"
 selenium = "*"
+selenium-screenshot = "*"
 
 [requires]
 python_version = "3.8"

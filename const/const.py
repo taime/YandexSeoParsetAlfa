@@ -6,7 +6,7 @@ end_page = 10
 # max_position_check = 820
 # res_on_page = 21
 # max_page = max_position_check//res_on_page
-files_folder = './tmp/'
+files_folder = '../tmp/'
 # domain = 'gurmanit.ru'
 domain = 'et-serv.ru'
 base_url = "https://yandex.ru/search/?text="
