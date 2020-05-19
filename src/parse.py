@@ -133,7 +133,7 @@ def checkPhrase(text):
     page = start_page
     clearTxtFile(domain, text)
     while (page < end_page):
-        time.sleep(4)
+        # time.sleep(4)
         # soup = getPage(domain, text, base_url, page, hdr, cookies)
         soup = getPageWithProxy(domain, text, base_url, page, hdr, cookies)
         # soup = getSoupFromHtmlPage('./tmp/test.html')
