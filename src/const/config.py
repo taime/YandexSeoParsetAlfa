@@ -7,8 +7,8 @@ end_page = 10
 # res_on_page = 21
 # max_page = max_position_check//res_on_page
 files_folder = 'tmp/'
-domain = 'gurmanit.ru'
-# domain = 'et-serv.ru'
+# domain = 'gurmanit.ru'
+domain = 'et-serv.ru'
 base_url = "https://yandex.ru/search/?text="
 cookies = chrome_cookies(base_url)
 
@@ -21,7 +21,7 @@ hdr = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKi
        'Connection': 'keep-alive'}
 
 
-phrases = [
+phrases_k = [
     'томаты пилати что это',
     'паста трофи',
     'каперсы на веточке',
@@ -35,7 +35,7 @@ phrases = [
     'чернила каракатицы купить',
 ]
 
-phrases_k = [
+phrases = [
     'частотный преобразователь danfoss',
     'частотный преобразователь данфосс',
     'частотный преобразователь danfoss vlt',
