@@ -44,8 +44,7 @@ def getPage(domain, text, base_url, p, hdr, cookies):
 def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
     # time.sleep(1)
     printy("[g]Try:" + str(tries) + ". " + str(base_url) + text + "&p=" + str(p))
-    proxies = getRandomProxy()
-    # proxies = getProxies(tries)
+    proxies = getRandomHttpsProxy()
     print("Proxies: "+str(proxies))
     text_q = urllib.parse.quote_plus(text)
     url = base_url + text_q + "&p=" + str(p)
@@ -53,7 +52,7 @@ def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
     # Making Request
     try:
         # response = requests.get(url, headers=hdr, cookies=cookies, timeout=10)
-        response = requests.get(url, headers=hdr, cookies=cookies, proxies=proxies, timeout=5)
+        response = requests.get(url, headers=hdr, cookies=cookies, proxies=proxies, timeout=6)
         response.raise_for_status()
         whiteHtmlFile(response.content, domain, text, url, p)
 
@@ -69,14 +68,10 @@ def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
                 continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
                 return (false)
             else:
-                printy("Let's check Capcha!", "m")
                 hasCapcha = checkHasCapcha(soup)
                 if (hasCapcha):
-                    printy("It's capcha!", "m")
                     continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
-                    # return (False)
                 else:
-                    printy("It's NOT capcha!", "b")
                     addProxyToTxtFile(proxies, file='proxies_best.txt')
                     return(soup)
 

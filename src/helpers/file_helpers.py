@@ -80,9 +80,15 @@ def writePositionsToTxtFile(positions, domain, text):
         f.write(positions)
 
 
-def addProxyToTxtFile(proxy, file='proxies.txt'):
+def addProxyToTxtFile(proxy, file='data.txt'):
     with open(file, 'a') as f:
-        f.write(proxy["https"]+"\n")
+        f.write(proxy["https"] + "\n")
+
+
+def addProxyToJsonFile(proxy, file='data.json'):
+    data = readDataFromJsonFile(filename)
+    data.append(proxy["https"])
+    saveDataToJsonFile(data, file)
 
 
 def clearTxtFile(domain, text):
