@@ -137,13 +137,9 @@ def checkPhrase(text):
         time.sleep(4)
         # soup = getPage(domain, text, base_url, page, hdr, cookies)
         soup = getPageWithProxy(domain, text, base_url, page, hdr, cookies)
-        # soup = BeautifulSoup(response.text, 'html.parser')
         # soup = getSoupFromHtmlPage('./tmp/test.html')
 
-        # find = findWord(soup, text, page)
-
         if findWord(soup, text, page):
-            # return('YES!')
             break
         else:
             print("didn't find it on page:" + str(page))
@@ -174,11 +170,11 @@ def doTheJob():
 
     for word in phrases:
         # NORMAL VARIANT
-        # res = checkPhrase(word)
+        res = checkPhrase(word)
 
-        # TEMPORARY VARIANT TAKE RANDOM NUMBER FO DICT
-        random_word = phrases[randint(0, wl)]
-        res = checkPhrase(random_word)
+        # # TEMPORARY VARIANT TAKE RANDOM NUMBER FO DICT
+        # random_word = phrases[randint(0, wl)]
+        # res = checkPhrase(random_word)
 
         if res == "STOP":
             print("Had to stop program!")
