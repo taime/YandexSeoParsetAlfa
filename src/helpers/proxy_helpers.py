@@ -24,6 +24,7 @@ def getHttpsProxy(n):
 
 def getRandomHttpsProxy():
     proxies_list = readDataFromJsonFile('const/proxies_https.json')
+    # proxies_list = readDataFromJsonFile('const/proxies_best.json')
     random = randint(0, len(proxies_list)-1)
     proxy = {"https": "https://"+proxies_list[random]}
     return proxy

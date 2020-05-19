@@ -19,6 +19,7 @@ from helpers.parsing_helpers import *
 
 
 def continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries):
+    printy("continueGetIfNotTooManyTries", 'mb')
     tries += 1
     if tries > 500:
         printy("Too much tires", "r")
@@ -42,17 +43,16 @@ def getPage(domain, text, base_url, p, hdr, cookies):
 
 
 def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
-    # time.sleep(1)
+    time.sleep(1)
     printy("[g]Try:" + str(tries) + ". " + str(base_url) + text + "&p=" + str(p))
     proxies = getRandomHttpsProxy()
     print("Proxies: "+str(proxies))
     text_q = urllib.parse.quote_plus(text)
     url = base_url + text_q + "&p=" + str(p)
-    soup = ''
     # Making Request
     try:
         # response = requests.get(url, headers=hdr, cookies=cookies, timeout=10)
-        response = requests.get(url, headers=hdr, cookies=cookies, proxies=proxies, timeout=6)
+        response = requests.get(url, headers=hdr, cookies=cookies, proxies=proxies, timeout=10)
         response.raise_for_status()
         whiteHtmlFile(response.content, domain, text, url, p)
 
@@ -91,7 +91,6 @@ def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
         printy("OOps: Something Else", "r")
         # print("OOps: Something Else", err)
         continueGetIfNotTooManyTries(domain, text, base_url, p, hdr, cookies, tries)
-    return(soup)
 
 
 def parseSearchPage(soup, domain, text, p,):
@@ -125,7 +124,7 @@ def findWord(soup, text, page):
         printy("Great! We've found it!", "m")
         return(True)
     else:
-        # print("Didn't found the word on this page, will try another")
+        print("Didn't found the word on this page, will try another")
         return(False)
 
 
@@ -143,8 +142,7 @@ def checkPhrase(text):
             break
         else:
             print("didn't find it on page:" + str(page))
-
-        page += 1
+            page += 1
 
         # if soup is None:
         #     printy("Soup is None", "m")
@@ -166,15 +164,13 @@ def checkPhrase(text):
 
 def doTheJob():
     printy("[wB]   -------------------\n       " + domain + "\n   -------------------")
-    wl = len(phrases)-1
+
+    wl = len(phrases) - 1
 
     for word in phrases:
-        # NORMAL VARIANT
-        res = checkPhrase(word)
-
-        # # TEMPORARY VARIANT TAKE RANDOM NUMBER FO DICT
-        # random_word = phrases[randint(0, wl)]
-        # res = checkPhrase(random_word)
+        # res = checkPhrase(word)
+        random_word = phrases[randint(0, wl)]
+        res = checkPhrase(random_word)
 
         if res == "STOP":
             print("Had to stop program!")
