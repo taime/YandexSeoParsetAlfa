@@ -33,7 +33,7 @@ def saveDataToTextFile(data, filename):
     a_file.close()
 
 
-def saveArrayToJsonFile(data, filename):
+def saveDataToJsonFile(data, filename):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
@@ -45,7 +45,7 @@ def readDataFromJsonFile(filename):
 
 
 def getProxies():
-    filename = 'proxies.json'
+    filename = '../const/proxies.json'
     url = 'https://free-proxy-list.net'
     firefox_path = r'/usr/local/bin/geckodriver'  # path from 'which chromedriver'
 
@@ -62,7 +62,7 @@ def getProxies():
     ip_addreses = parseIpAddreses(txt)
 
     # Saving The IP addreses to json file
-    saveArrayToJsonFile(ip_addreses, filename)
+    saveDataToJsonFile(ip_addreses, filename)
 
     # Select dropdown = new Select(driver.findElement(By.id("identifier")))
     # driver.save_screenshot("screenshot.png")

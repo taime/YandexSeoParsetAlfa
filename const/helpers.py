@@ -11,18 +11,6 @@ from const import start_page, end_page, base_url, files_folder, domain, phrases,
 from proxy_lists import proxies_list_https
 
 
-def readTextFile(filename):
-    f = open(filename, "r")
-    s = f.read()
-    return (s)
-
-
-def parseIpAddreses(string):
-    ips = re.findall(r'[0-9]+(?:\.[0-9]+){3}:[0-9]+', s)
-    # for i in range(len(ips)):
-    #     print(ips[i])
-    return (ips)
-
 
 def whiteHtmlFile(htmlBody, filename):
     with open(filename, 'wb') as f:
