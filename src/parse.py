@@ -52,7 +52,7 @@ def getPageWithProxy(domain, text, base_url, p, hdr, cookies, tries=0):
     # Making Request
     try:
         # response = requests.get(url, headers=hdr, cookies=cookies, timeout=10)
-        response = requests.get(url, headers=hdr, cookies=cookies, proxies=proxies, timeout=10)
+        response = requests.get(url, headers=hdr, cookies=cookies, proxies=proxies, timeout=1)
         response.raise_for_status()
         whiteHtmlFile(response.content, domain, text, url, p)
 
