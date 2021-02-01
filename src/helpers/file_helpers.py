@@ -56,6 +56,9 @@ def readDataFromJsonFile(filename):
         data = json.load(json_file)
     return(data)
 
+def writeFile(htmlBody, filename):
+    with open(filename, 'wb') as f:
+        f.write(htmlBody)
 
 def whiteHtmlFile(html, domain, text, url, p):
     filename = domain + '_' + text + '_' + str(p)+'.html'
